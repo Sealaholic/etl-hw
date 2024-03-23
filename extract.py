@@ -11,11 +11,11 @@ res = requests.get("https://www.travel.taipei/open-api/zh-cn/Attractions/All?pag
 data=res.json()
 data = data['data']
 
-# All columns needed
+# # All columns needed
 list_key = ['id','name','introduction','address','nlat','elong','modified']
-list_ambigious=['transport','mrt']
+# list_ambigious=['transport','mrt']
 
-# Category
+# # Category
 list_id =[]
 for i in range(len(data)):
     list_id.append(data[i]['id'])
@@ -24,7 +24,7 @@ list_cate = []
 for i in range(len(data)):
     list_cate.append(data[i]['category'][0]['name']) # Good len = 30
 
-# All rows
+# # All rows
 list_total=[]
 list_tool=[]
 for keys in list_key:
@@ -34,7 +34,7 @@ for keys in list_key:
     list_total.append(list_tool)
 # print(list_total) # Good
 
-# Check the numbers of elements in each columns
+# # Check the numbers of elements in each columns
 list_check=[]
 for ele in list_total:
     if len(ele) != 30:
@@ -48,12 +48,13 @@ connection = mysql.connector.connect(host='practice-database.mysql.database.azur
 
 if connection.is_connected():
     print('Connected to MySQL database')
-    cursor = connection.cursor()
-    query = ''' 
-    INSERT INTO attraction_hw (id) VALUES (%s)
-    '''
-    cursor.execute(query)
-
+    for id in list_total[0]:
+        cursor = connection.cursor()
+        query = ''' 
+        INSERT INTO attraction_hw (id) VALUES (%s);
+        '''
+        cursor.execute(query, (id,))
+    connection.commit()
 
 if connection.is_connected():
     cursor.close()
