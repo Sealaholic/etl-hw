@@ -32,15 +32,15 @@ for keys in list_key:
     for i in range(len(data)):
         list_tool.append(data[i][keys])
     list_total.append(list_tool)
-# print(list_total) # Good
+print(list_total) # Good len = 7
 
-# Check the numbers of elements in each columns
-list_check=[]
-for ele in list_total:
-    if len(ele) != 30:
-        list_check.append(ele)
-# print(list_check) # Good, no NULL generated.
-
+# # Check the numbers of elements in each columns
+# list_check=[]
+# for ele in list_total:
+#     if len(ele) != 30:
+#         list_check.append(ele)
+# # print(list_check) # Good, no NULL generated.
+# list_total = list_total[1:]
 connection = mysql.connector.connect(host='practice-database.mysql.database.azure.com', 
                                         database='website',
                                         user='shared_user',
@@ -49,10 +49,24 @@ connection = mysql.connector.connect(host='practice-database.mysql.database.azur
 if connection.is_connected():
     print('Connected to MySQL database')
     cursor = connection.cursor()
-    query = ''' 
-    INSERT INTO attraction_hw (id) VALUES (%s)
-    '''
-    cursor.execute(query)
+    for i in range(len(list_total[0])): 
+        data_update = (
+            list_total[1][i],  
+            list_total[2][i],  
+            list_total[3][i],  
+            list_total[4][i],  
+            list_total[5][i],  
+            list_total[6][i], 
+            list_total[0][i],  
+        )
+        cursor = connection.cursor()
+        query = '''
+            UPDATE attraction_hw 
+            SET name = %s, description = %s, address = %s, latitude = %s, longtitude = %s, time = %s 
+            WHERE id = %s;
+        '''
+        cursor.execute(query, data_update)
+    connection.commit()
 
 
 if connection.is_connected():
